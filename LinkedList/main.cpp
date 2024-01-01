@@ -4,68 +4,275 @@ using namespace std;
 
 class Node
 {
-public:
-    int value;
-    Node *next;
-    Node(int value)
-    {
-        this->value = value;
-        next = nullptr;
+    public:
+        int value;
+        Node *next;
+        Node(int value)
+        {
+            this->value = value;
+            next = nullptr;
 
-    }
+        }
 };
 
 class LinkedList
 {
-private:
-    Node* head;
-    Node *tail;
-    int length;
-public:
-    LinkedList(int value)
-    {
-        Node *newNode = new Node(value);
-        head = newNode;
-        tail = newNode;
-        length = 1;
-    }
-
-    ~LinkedList()
-    {
-        Node *temp = head;
-        while(head)
+    private:
+        Node* head;
+        Node *tail;
+        int length;
+    public:
+        LinkedList(int value)
         {
-            head = head->next;
+            Node *newNode = new Node(value);
+            head = newNode;
+            tail = newNode;
+            length = 1;
+        }
+
+        ~LinkedList()
+        {  
+            // delete cac node tu dau toi cuoi.
+            Node *temp = head;
+            while(head)
+            {
+                head = head->next;
+                delete temp;
+                temp = head;
+            }
+        }
+
+        void printList()
+        {
+            //in cac node tu dau toi cuoi
+            Node *temp = head;
+            while(temp != nullptr)
+            {
+                cout << temp->value << endl;
+                temp = temp->next;
+            }
+        }
+
+        void append(int value)
+        {
+            //them node vao cuoi
+            Node *newNode = new Node(value);
+            Node *temp = head;
+            if(length == 0)
+            {
+                head = newNode;
+                tail = newNode;
+            }
+            else
+            {
+                tail->next = newNode;
+                tail = newNode;
+            }
+            length++;
+        }
+
+        void prepend(int value)
+        {
+            Node *newNode = new Node(value);
+            if(length < 0) return;
+            if(length == 0)
+            {
+                head = newNode;
+                tail = newNode;
+            }
+            else
+            {
+                newNode->next = head;
+                head = newNode;
+            }
+            length++;
+        }
+
+        void deleteLast()
+        {
+            
+            if(length == 0)
+            {
+                return;
+            }
+            Node *temp = head;
+            if(length == 1)
+            {
+                head = nullptr;
+                head = nullptr;
+            }
+            else
+            {
+                Node *pre = head;
+                while(temp->next)
+                {
+                    pre = temp;
+                    temp = temp->next;
+                }
+                tail = pre;
+                tail->next = nullptr;
+            }
             delete temp;
-            temp = head;
+            length++;
         }
-    }
 
-    Node* getHead()
-    {
-        return head;
-    }
-
-    Node* getTail()
-    {
-        return tail;
-    }
-
-    int getLength()
-    {
-        return length;
-    }
-
-    void printList()
-    {
-        Node * temp = head;
-        while(temp)
+        void deleteFirst()
         {
-            cout << temp->value << endl;
-            temp = temp->next;
+            
+            if(length <= 0)
+            {
+                return;
+            }
+            Node *temp = head;
+            if(length == 1)
+            {
+                head = nullptr;
+                tail = nullptr;
+            }
+            else
+            {
+                head = head->next;
+            }
+            delete temp;
+            length--;
         }
-    }
 
+        Node* get(int index)
+        {
+            if(index < 0 || index >= length)
+            {
+                return nullptr;
+            }
+            Node *temp = head;
+            for(int i=0; i<index; i++)
+            {
+                temp = temp->next;
+            }
+            return temp;
+        }
+
+        bool set(int index, int value)
+        {
+            if(index < 0 || index>= length)
+            {
+                return false;
+            }
+            Node *temp = head;
+            for(int i=0; i<index; i++)
+            {
+                temp = temp->next;
+            }
+            temp->value = value;
+            return true;
+        }
+        bool insert(int index, int value)
+        {
+            if(index < 0 || index > length)
+            {
+                return false;
+            }
+            if(index == 0)
+            {
+                prepend(value);
+                return true;
+            }
+            else
+            {
+                Node *newNode = new Node(value);
+                Node *temp = head;
+                for(int i=0; i+1< index; i++)
+                {
+                    temp = temp->next;
+
+                }
+                newNode->next = temp->next;
+                temp->next = newNode;
+                length++;
+                return true;
+            }
+        }
+
+        void deleteNode(int index)
+        {
+            if(index <0 | index >= length)
+            {
+                return;
+            }
+            if(length == 0)
+            {
+                head = nullptr;
+                tail = nullptr;
+                return;
+            }
+            Node* temp = get(index);
+            if(index == 0)
+            {
+                head = head->next;
+                delete temp;
+                
+            }
+            else
+            {
+                Node* pre=get(index-1);
+                pre->next = temp->next;
+                delete temp;
+            }
+            length--;
+            return;
+
+        }
+
+        void reverse()
+        {
+            if(length == 0 || length == 1)
+            {
+                return;
+            }
+            Node* temp = head;
+            head = tail;
+            tail = temp;
+            Node *before = nullptr;
+            Node *after = temp->next;
+            while(temp)
+            {
+                after = temp->next;
+                temp->next = before;
+                before = temp;
+                temp = after;
+            }
+
+        }
+
+        void makeEmpty()
+        {
+            Node* temp = head;
+            while (head) {
+                head = head->next;
+                delete temp;
+                temp = head;
+            }
+            tail = nullptr;
+        }
+
+        Node* getHead()
+        {
+            return head;
+        }
+
+        Node * getTail()
+        {
+            return tail;
+        }
+
+        int getLength()
+        {
+            return length;
+        }
+
+        Node *findMiddleNode()
+        {
+            
+        }
 };
 
 void checkTestResult(bool condition)
@@ -75,52 +282,15 @@ void checkTestResult(bool condition)
 
 int main()
 {
-
-    // Test 1: InitializesHeadCorrectly
+    // Test 0: init without creat new node
     {
-        cout << "\n------ LinkedList Test: InitializesHeadCorrectly ------\n";
-
-        LinkedList ll(5);
-
-        cout << "Expected Head Value: 5\n";
-        cout << "Actual Head Value: " << ll.getHead()->value << "\n";
-
-        checkTestResult(ll.getHead()->value == 5);
+        //LinkedList test0;
     }
 
-    // Test 2: InitializesTailCorrectly
-    {
-        cout << "\n------ LinkedList Test: InitializesTailCorrectly ------\n";
 
-        LinkedList ll(5);
-
-        cout << "Expected Tail Value: 5\n";
-        cout << "Actual Tail Value: " << ll.getTail()->value << "\n";
-
-        checkTestResult(ll.getTail()->value == 5);
-    }
-
-    // Test 3: InitializesLengthCorrectly
-    {
-        cout << "\n------ LinkedList Test: InitializesLengthCorrectly ------\n";
-
-        LinkedList ll(5);
-
-        cout << "Expected Length: 1\n";
-        cout << "Actual Length: " << ll.getLength() << "\n";
-
-        checkTestResult(ll.getLength() == 1);
-    }
-
-    // Test 4: HeadAndTailAreTheSameNode
-    {
-        cout << "\n------ LinkedList Test: HeadAndTailAreTheSameNode ------\n";
-
-        LinkedList ll(5);
-
-        cout << "Checking if head and tail point to the same node...\n";
-
-        checkTestResult(ll.getHead() == ll.getTail());
-    }
+    //Prepend: Test
+    LinkedList ll(0);
+    ll.prepend(1);
+    ll.printList();
     return 0;
 }
