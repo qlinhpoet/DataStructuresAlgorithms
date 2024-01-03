@@ -117,9 +117,57 @@ public:
         return temp1;
     }
 
+    bool myhasLoop()
+    {
+        Node* temp = head;
+        Node* temp2 = head;
+        while(temp != nullptr)
+        {
+            temp=temp->next;
+            do
+            {
+                if(temp == temp2)
+                {
+                    return true;
+                }
+                else
+                {
+                    temp2 = temp2->next;
+                }
+            }
+            while(temp2 != temp);
+            temp2 = head;
+        }
+        return false;
+    }
+
+    bool hasLoop()
+    {
+        Node* slow = head;
+        Node* fast = head;
+
+        while(fast!=nullptr && fast->next!=nullptr)
+        {
+            slow = slow->next;
+            fast = fast->next->next;
+
+            if(fast == slow)
+            {
+                return true;
+            }
+        }
+        return false;
+
+    }
+
     Node* getHead()
     {
         return head;
+    }
+
+    Node* getTail()
+    {
+        return tail;
     }
 
     void append(int value)
@@ -137,9 +185,9 @@ public:
 
 int main()
 {
-    // Function to convert nullptr to "0 (nullptr)"
-    auto ptrToNum = [](Node* ptr) -> string {
-        return (ptr == nullptr) ? "0 (nullptr)" : to_string(ptr->value);
+    // Function to convert boolean to string for easy comparison
+    auto boolToStr = [](bool val) -> string {
+        return val ? "True" : "False";
     };
 
     // Helper function to check test result
@@ -147,69 +195,96 @@ int main()
         cout << (condition ? "PASS" : "FAIL") << endl;
     };
 
-    // Test: EmptyList
+    // Test: EmptyListHasLoop
     {
-        cout << "\n------ LinkedList Test: EmptyList ------\n";
+        cout << "\n------ LinkedList Test: EmptyListHasLoop ------\n";
 
         LinkedList list(1);
         list.makeEmpty();
-        
+
         list.printList();
-        
-        Node* middle = list.findMiddleNode();
-        
-        cout << "Middle node: " << ptrToNum(middle) << endl;
-        
-        checkTestResult(middle == nullptr);
+
+        bool hasLoop = list.hasLoop();
+
+        cout << "Has loop: " << boolToStr(hasLoop) << endl;
+
+        checkTestResult(!hasLoop);
     }
 
-    // Test: SingleElement
+    // Test: SingleElementNoLoop
     {
-        cout << "\n------ LinkedList Test: SingleElement ------\n";
-        
+        cout << "\n------ LinkedList Test: SingleElementNoLoop ------\n";
+
         LinkedList list(1);
-        
-        list.printList();
-        
-        Node* middle = list.findMiddleNode();
-        
-        cout << "Middle node: " << ptrToNum(middle) << endl;
 
-        checkTestResult(middle == list.getHead());
+        list.printList();
+
+        bool hasLoop = list.hasLoop();
+
+        cout << "Has loop: " << boolToStr(hasLoop) << endl;
+
+        checkTestResult(!hasLoop);
     }
 
-    // Test: EvenNumberOfElements
+    // Test: MultipleElementsNoLoop
     {
-        cout << "\n------ LinkedList Test: EvenNumberOfElements ------\n";
-        
+        cout << "\n------ LinkedList Test: MultipleElementsNoLoop ------\n";
+
         LinkedList list(1);
         list.append(2);
         list.append(3);
         list.append(4);
-        
-        list.printList();
-        
-        Node* middle = list.findMiddleNode();
-        
-        cout << "Middle node: " << ptrToNum(middle) << endl;
 
-        checkTestResult(middle->value == 3);
+        list.printList();
+
+        bool hasLoop = list.hasLoop();
+
+        cout << "Has loop: " << boolToStr(hasLoop) << endl;
+
+        checkTestResult(!hasLoop);
     }
 
-    // Test: OddNumberOfElements
+    // Test: SingleElementWithLoop
     {
-        cout << "\n------ LinkedList Test: OddNumberOfElements ------\n";
-        
+        cout << "\n------ LinkedList Test: SingleElementWithLoop ------\n";
+
+        LinkedList list(1);
+        Node* tail = list.getTail();
+        tail->next = list.getHead();
+
+        // Can't print the list because it has a loop!
+
+        bool hasLoop = list.hasLoop();
+
+        cout << "Has loop: " << boolToStr(hasLoop) << endl;
+
+        tail->next = nullptr;  // Break the loop
+
+        checkTestResult(hasLoop);
+    }
+
+    // Test: MultipleElementsWithLoop
+    {
+        cout << "\n------ LinkedList Test: MultipleElementsWithLoop ------\n";
+
         LinkedList list(1);
         list.append(2);
         list.append(3);
-        
-        list.printList();
-        
-        Node* middle = list.findMiddleNode();
-        
-        cout << "Middle node: " << ptrToNum(middle) << endl;
-        
-        checkTestResult(middle->value == 2);
+        list.append(4);
+        Node* tail = list.getTail();
+        tail->next = list.getHead();
+
+        // Can't print the list because it has a loop!
+
+        bool hasLoop = list.hasLoop();
+
+        cout << "Has loop: " << boolToStr(hasLoop) << endl;
+
+        tail->next = nullptr;  // Break the loop
+
+        checkTestResult(hasLoop);
     }
+
+    cout << "end" ;
+
 }
