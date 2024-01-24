@@ -118,11 +118,77 @@ public:
     }
 
     void BFS();
+
+    void DFSPreOrder(Node* currentNode)
+    {
+        if(currentNode == nullptr) return;
+        // print current node's value
+        cout << currentNode->value << " ";
+        // traverse left subtree recursively
+        if(currentNode->left != nullptr)
+        {
+            DFSPreOrder(currentNode->left);
+        }
+        // traverse right subtree 
+        if(currentNode->right != nullptr)
+        {
+            DFSPreOrder(currentNode->right);
+        }
+    }
+
+    //overload function incase root is private.
+    void DFSPreOrder()
+    {
+        DFSPreOrder(root);
+    }
+
+    void DFSPostOrder(Node* currentNode)
+    {
+        if(currentNode == nullptr) return;
+            
+        if(currentNode->left != nullptr)
+        {
+            DFSPostOrder(currentNode->left);
+        }
+        if(currentNode->right != nullptr)
+        {
+            DFSPostOrder(currentNode->right);
+        }
+        cout << currentNode->value << " ";
+    }
+
+    //overload function incase root is private.
+    void DFSPostOrder()
+    {
+        DFSPostOrder(root);
+    }
+
+    void DFSInOrder(Node* currentNode)
+    {
+        if(currentNode == nullptr) return;
+        
+        if(currentNode->left != nullptr)
+        {
+            DFSInOrder(currentNode->left);
+        }
+        cout << currentNode->value <<" ";
+        if(currentNode->right != nullptr)
+        {
+            DFSInOrder(currentNode->right);
+        }
+    }
+
+    //overload function incase root is private.
+    void DFSInOrder()
+    {
+        DFSInOrder(root);
+    }
 };
 
 void BinarySearchTree::BFS()      //breadth first search
 {
-    //if(root == nullptr) return;
+    if(root == nullptr) return;
+    //template - creat new queue
     queue<Node*> myQueue;
     //add root of BST into queue
     myQueue.push(root);
@@ -149,7 +215,13 @@ int main()
     mybst.insert(2);
     mybst.insert(3);
     mybst.insert(8);
+    mybst.insert(4);
     mybst.BFS();
-
+    cout << endl;
+    mybst.DFSPreOrder();
+    cout << endl;
+    mybst.DFSPostOrder();
+    cout << endl;
+    mybst.DFSInOrder();
     return 0;
 }
