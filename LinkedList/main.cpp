@@ -1,5 +1,5 @@
 #include <iostream>
-
+#include <vector>
 using namespace std;
 
 class Node
@@ -53,9 +53,9 @@ class LinkedList
             }
         }
 
+        //them node vao cuoi
         void append(int value)
         {
-            //them node vao cuoi
             Node *newNode = new Node(value);
             Node *temp = head;
             if(length == 0)
@@ -70,7 +70,7 @@ class LinkedList
             }
             length++;
         }
-
+        //them node vao dau
         void prepend(int value)
         {
             Node *newNode = new Node(value);
@@ -87,7 +87,7 @@ class LinkedList
             }
             length++;
         }
-
+        //xoa node cuoi
         void deleteLast()
         {
             
@@ -115,7 +115,7 @@ class LinkedList
             delete temp;
             length++;
         }
-
+        //xoa node dau
         void deleteFirst()
         {
             
@@ -136,7 +136,7 @@ class LinkedList
             delete temp;
             length--;
         }
-
+        
         Node* get(int index)
         {
             if(index < 0 || index >= length)
@@ -165,6 +165,7 @@ class LinkedList
             temp->value = value;
             return true;
         }
+        //them node vao vi tri bat ky
         bool insert(int index, int value)
         {
             if(index < 0 || index > length)
@@ -221,7 +222,7 @@ class LinkedList
             return;
 
         }
-
+        //dao nguoc linked list
         void reverse()
         {
             if(length == 0 || length == 1)
@@ -273,7 +274,104 @@ class LinkedList
         {
             
         }
-};
+        void bubbleSort()
+        {
+            if(length < 2) return;
+            Node* temp = nullptr;
+            for(int i=length; i>0; i--)
+            {
+                temp = head;
+                for(int j=0; j<i-1; j++)
+                {
+                    if(temp->value > temp->next->value)
+                    {
+                        int tempValue = temp->value;
+                        temp->value = temp->next->value;
+                        temp->next->value = tempValue;
+                    }
+                    temp = temp->next;
+                }
+            }
+        }
+
+        //selection sort - only sort value of node.
+        void selectionSort()
+        {
+            if(length < 2) return;
+            Node* temp1 = head;
+            while(temp1->next != nullptr)
+            {
+                Node* minNode = temp1;
+                Node* temp2 = temp1;
+                while(temp2->next != nullptr)
+                {
+                    temp2 = temp2->next;
+                    if(minNode->value > temp2->value)
+                    {
+                        minNode = temp2;
+                    }
+                }
+                //swap min value
+                if(minNode != temp1)
+                {
+                    int minValue = minNode->value;
+                    minNode->value = temp1->value;
+                    temp1->value = minValue;
+                }
+                temp1 = temp1->next;
+            }
+        }
+
+        //insertion sort - node(included value and next) is sorted follow its value, head and tail also are updated.
+        void insertionSort() {
+            if (length < 2) return;
+        
+            Node* sortedListHead = head;
+            Node* unsortedListHead = head->next;
+            sortedListHead->next = nullptr;
+        
+            while (unsortedListHead != nullptr) {
+                Node* current = unsortedListHead;
+                unsortedListHead = unsortedListHead->next;
+        
+                if (current->value < sortedListHead->value)
+                {
+                    current->next = sortedListHead;
+                    sortedListHead = current;
+                } 
+                else 
+                {
+                    Node* searchPointer = sortedListHead;
+                    while (searchPointer->next != nullptr && current->value > searchPointer->next->value) {
+                        searchPointer = searchPointer->next;
+                    }
+                    current->next = searchPointer->next;
+                    searchPointer->next = current;
+                }
+            }
+        
+            head = sortedListHead;
+            Node* temp = head;
+            while (temp->next != nullptr) 
+            {
+                temp = temp->next;
+            }
+            tail = temp;
+        }
+
+        void printAll()
+        {
+
+            Node* temp = head;
+            cout << "head:"<< head << endl ;
+            while(temp)
+            {
+                cout << temp << " : " << temp->value << endl;
+                temp = temp->next;
+            }
+            cout << "tail:"<< tail << endl ;
+        }
+}; 
 
 void checkTestResult(bool condition)
 {
@@ -289,8 +387,16 @@ int main()
 
 
     //Prepend: Test
-    LinkedList ll(0);
+    LinkedList ll(3);
     ll.prepend(1);
-    ll.printList();
+    ll.prepend(5);
+    ll.prepend(6);
+    ll.prepend(2);
+    ll.prepend(4);
+    ll.printAll();
+    cout << endl;
+    ll.insertionSort();
+    ll.printAll();
+
     return 0;
 }
