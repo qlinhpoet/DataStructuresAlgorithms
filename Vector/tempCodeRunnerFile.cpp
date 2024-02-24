@@ -1,0 +1,1 @@
+        removeElement(nums, 10);
