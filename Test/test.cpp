@@ -1,113 +1,122 @@
 #include <iostream>
+#include <algorithm>
 #include <vector>
-
 using namespace std;
-
-int maxProfit(vector<int>& prices)
-{
-    int maxProfit = 0;
+vector<int> findDuplicates(const vector<int>& nums) {
+    vector<int> duplicateVector;
     
-}
-
-void printVector(const vector<int>& nums, int newSize = -1) {
-    cout << "[";
-    int sizeToPrint = (newSize == -1) ? nums.size() : newSize;
-    for (int i = 0; i < sizeToPrint; i++) {
-        cout << nums[i];
-        if (i < sizeToPrint - 1) {
-            cout << ", ";
-        }
-    }
-    cout << "]";
-}
-
-int myremoveDuplicates(vector<int>& nums)
-{
-    vector<int>::iterator current = nums.begin();
-    for(size_t i = 1; i<nums.size(); i++)
+    for(int i = 0; i<nums.size(); i++)
     {
-        if(*current == *(current + 1))
+        for(int j=i+1; j<nums.size(); j++)
         {
-            nums.erase(current+1);
-            i--;
-
-        }
-        else
-        {
-            current++;
-        }
-    }
-    return nums.size();
-}
-int removeDuplicates(vector<int>& nums) {
-    if (nums.size() == 0) {
-        return 0;
-    }
- 
-    int writePointer = 1;
- 
-    for (int readPointer = 1; readPointer < nums.size(); readPointer++) {
-        if (nums[readPointer] != nums[readPointer - 1]) {
-            nums[writePointer] = nums[readPointer];
-            writePointer++;
-        }
-    }
- 
-    return writePointer;
-}
-
-int main() {
-    {
-        cout << "\n----- Test: EmptyList -----\n";
-        vector<int> nums = {};
-        cout << "Before: "; printVector(nums); cout << "\n";
-        int newSize = removeDuplicates(nums);
-        cout << "After: "; printVector(nums, newSize); cout << "\n";
-        cout << (newSize == 0 && nums.empty() ? "PASS\n" : "FAIL\n");
-    }
-
-    {
-        cout << "\n----- Test: SingleElement -----\n";
-        vector<int> nums = {5};
-        cout << "Before: "; printVector(nums); cout << "\n";
-        int newSize = removeDuplicates(nums);
-        cout << "After: "; printVector(nums, newSize); cout << "\n";
-        cout << (newSize == 1 && nums[0] == 5 ? "PASS\n" : "FAIL\n");
-    }
-
-    {
-        cout << "\n----- Test: MultipleDuplicates -----\n";
-        vector<int> nums = {1, 1, 1, 2, 2, 3, 4, 4, 4};
-        cout << "Before: "; printVector(nums); cout << "\n";
-        int newSize = removeDuplicates(nums);
-        cout << "After: "; printVector(nums, newSize); cout << "\n";
-        if (newSize == 4 && nums[0] == 1 && nums[1] == 2 && nums[2] == 3 && nums[3] == 4) {
-            cout << "PASS\n";
-        } else {
-            cout << "FAIL\n";
-        }
-    }
-
-    {
-        cout << "\n----- Test: NoDuplicates -----\n";
-        vector<int> nums = {1, 2, 3, 4, 5};
-        cout << "Before: "; printVector(nums); cout << "\n";
-        int newSize = removeDuplicates(nums);
-        cout << "After: "; printVector(nums, newSize); cout << "\n";
-        bool pass = true;
-        if (newSize != 5) {
-            pass = false;
-        } else {
-            for (int i = 0; i < newSize; i++) {
-                if (nums[i] != i + 1) {
-                    pass = false;
-                    break;
-                }
+            if(nums[i] == nums[j])
+            {
+                duplicateVector.push_back(nums[i]);
             }
         }
-        cout << (pass ? "PASS\n" : "FAIL\n");
+    }
+    return duplicateVector;
+	//   +=====================================================+
+	//   |                 WRITE YOUR CODE HERE                |
+	//   | Description:                                        |
+	//   | - This function finds duplicate integers in a given |
+	//   |   vector.                                           |
+	//   | - It uses an unordered_map to count each integer's  |
+	//   |   occurrences.                                      |
+	//   | - Loops through the map to find duplicates.         |
+	//   |                                                     |
+	//   | Return type: vector<int>                            |
+	//   |                                                     |
+	//   | Tips:                                               |
+	//   | - 'numCounts' keeps track of each integer's count.  |
+	//   | - 'duplicates' stores duplicate integers found.     |
+	//   | - Check output from Test.cpp in "User logs".        |
+	//   +=====================================================+
+}
+int main() {
+    auto printVector = [](const vector<int>& v) {
+        cout << "(";
+        for(int i = 0; i < v.size(); i++) {
+            cout << v[i];
+            if (i < v.size() - 1) cout << ", ";
+        }
+        cout << ")";
+    };
+
+    {
+        cout << "\n----- Test: No Duplicates -----\n";
+        vector<int> nums = {1, 2, 3, 4, 5};
+        vector<int> expected = {};
+        vector<int> result = findDuplicates(nums);
+        cout << "EXPECTED: No Duplicates\n";
+        cout << "RETURNED: ";
+        printVector(result);
+        cout << "\n";
+        cout << (result == expected ? "PASS\n" : "FAIL\n");
+    }
+
+    {
+        cout << "\n----- Test: Some Duplicates -----\n";
+        vector<int> nums = {1, 2, 3, 2, 1, 4, 5, 6, 5, 2};
+        vector<int> expected = {1, 2, 5};
+        vector<int> result = findDuplicates(nums);
+        sort(result.begin(), result.end());
+        cout << "EXPECTED: Has Duplicates: ";
+        printVector(expected);
+        cout << "\n";
+        cout << "RETURNED: ";
+        printVector(result);
+        cout << "\n";
+        cout << (result == expected ? "PASS\n" : "FAIL\n");
+    }
+
+    {
+        cout << "\n----- Test: All Duplicates -----\n";
+        vector<int> nums = {1, 1, 2, 2, 3, 3};
+        vector<int> expected = {1, 2, 3};
+        vector<int> result = findDuplicates(nums);
+        sort(result.begin(), result.end());
+        cout << "EXPECTED: Has Duplicates: (1, 2, 3)\n";
+        cout << "RETURNED: ";
+        printVector(result);
+        cout << "\n";
+        cout << (result == expected ? "PASS\n" : "FAIL\n");
+    }
+
+    {
+        cout << "\n----- Test: Empty Vector -----\n";
+        vector<int> nums = {};
+        vector<int> expected = {};
+        vector<int> result = findDuplicates(nums);
+        cout << "EXPECTED: No Duplicates\n";
+        cout << "RETURNED: ";
+        printVector(result);
+        cout << "\n";
+        cout << (result == expected ? "PASS\n" : "FAIL\n");
     }
     return 0;
 }
 
+
+
+/* 
+    EXPECTED OUTPUT:
+    ----- Test: No Duplicates -----
+    EXPECTED: No Duplicates
+    RETURNED: ()
+    PASS
+    ----- Test: Some Duplicates -----
+    EXPECTED: Has Duplicates: (1, 2, 5)
+    RETURNED: (1, 2, 5)
+    PASS
+    ----- Test: All Duplicates -----
+    EXPECTED: Has Duplicates: (1, 2, 3)
+    RETURNED: (1, 2, 3)
+    PASS
+    ----- Test: Empty Vector -----
+    EXPECTED: No Duplicates
+    RETURNED: ()
+    PASS
+
+*/
 

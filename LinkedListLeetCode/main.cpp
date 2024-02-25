@@ -20,6 +20,7 @@ class LinkedList
 private:
     Node* head;
     Node* tail;
+    int length;
 public:
     LinkedList(int value)
     {
@@ -180,13 +181,170 @@ public:
         }
         temp->next = newNode;
     }
-};
+    
+    //WITHOUT USING THE LENGTH
+    Node* findKthFromEnd(int k)
+    {
+        Node* fast = head;
+        Node* slow = head;
 
+        //set fastPrt is fast than slowPrt k-1 Node
+        //so while fastPrt is tail => slow is finding Node
+        for(int i=0; i<k; i++)
+        {
+            if(fast == nullptr) return nullptr;
+            fast = fast->next;
+        }
+        while(fast != nullptr)
+        {
+            slow = slow->next;
+            fast = fast->next;
+        }
+        return slow;
+    }
+
+    void removeDuplicates()
+    {
+        if(head == nullptr) return;
+
+        Node* slow = head;
+        while(slow->next != nullptr)
+        {
+            Node* prefast = slow;
+            Node* fast = slow->next;
+            while(fast != nullptr)
+            {
+                if(fast->value == slow->value)
+                {
+                    prefast->next = fast->next;
+                    fast = prefast->next;
+                }
+                else
+                {
+                    prefast = fast;
+                    fast = fast->next;
+                }
+            }
+            tail = prefast;
+            slow = slow->next;
+        }
+    }
+};
+static void testremoveDuplicates();
+static void TestfindKthFromEnd();
 int main()
+{   
+    LinkedList list(1);
+    list.append(2);
+    list.append(3);
+    cout << list.findKthFromEnd(1)->value << endl;
+    testremoveDuplicates();
+    //TestfindKthFromEnd();
+
+}
+
+static void testremoveDuplicates() {
+    // Helper function for pass/fail
+    auto checkTestResult = [](bool condition) {
+        cout << (condition ? "PASS" : "FAIL") << endl;
+    };
+
+    // Test: RemoveDuplicatesEmptyList
+    {
+        cout << "\n------ Test: RemoveDuplicatesEmptyList ------\n";
+        
+        LinkedList list(1);
+        list.makeEmpty();
+        
+        cout << "BEFORE:    ";
+        list.printList();
+        
+        list.removeDuplicates();
+        
+        cout << "AFTER:     ";
+        list.printList();
+        
+        Node* head = list.getHead();
+        checkTestResult(head == nullptr);
+    }
+
+    // Test: RemoveDuplicatesSingleElement
+    {
+        cout << "\n------ Test: RemoveDuplicatesSingleElement ------\n";
+        
+        LinkedList list(1);
+        
+        cout << "BEFORE:    ";
+        list.printList();
+        
+        list.removeDuplicates();
+        
+        cout << "AFTER:     ";
+        list.printList();
+        
+        Node* head = list.getHead();
+        checkTestResult(head && head->value == 1);
+    }
+
+    // Test: RemoveDuplicatesNoDuplicates
+    {
+        cout << "\n------ Test: RemoveDuplicatesNoDuplicates ------\n";
+        
+        LinkedList list(1);
+        list.append(2);
+        list.append(3);
+        
+        cout << "BEFORE:    ";
+        list.printList();
+        
+        list.removeDuplicates();
+        
+        cout << "AFTER:     ";
+        list.printList();
+        
+        Node* head = list.getHead();
+        checkTestResult(head && head->value == 1);
+    }
+
+    // Test: RemoveDuplicatesHasDuplicates
+    {
+        cout << "\n------ Test: RemoveDuplicatesHasDuplicates ------\n";
+        
+        LinkedList list(1);
+        list.append(2);
+        list.append(2);
+        list.append(3);
+        
+        cout << "BEFORE:    ";
+        list.printList();
+        
+        list.removeDuplicates();
+        
+        cout << "AFTER:     ";
+        list.printList();
+        
+        // Check for duplicates
+        Node* current = list.getHead();
+        bool noDuplicates = true;
+        
+        while (current && current->next) {
+            if (current->value == current->next->value) {
+                noDuplicates = false;
+                break;
+            }
+            current = current->next;
+        }
+        
+        checkTestResult(noDuplicates);
+    }
+    
+}
+
+static void TestfindKthFromEnd() 
 {
-    // Function to convert boolean to string for easy comparison
-    auto boolToStr = [](bool val) -> string {
-        return val ? "True" : "False";
+    // Function to convert nullptr to string for easy comparison
+    auto ptrToNum = [](Node* ptr) -> string {
+        return (ptr == nullptr) ? "nullptr" : to_string(ptr->value);
     };
 
     // Helper function to check test result
@@ -194,96 +352,74 @@ int main()
         cout << (condition ? "PASS" : "FAIL") << endl;
     };
 
-    // Test: EmptyListHasLoop
+    // Test: EmptyList
     {
-        cout << "\n------ LinkedList Test: EmptyListHasLoop ------\n";
-
+        cout << "\n------ LinkedList Test: EmptyList ------\n";
+        
         LinkedList list(1);
         list.makeEmpty();
-
+        
         list.printList();
-
-        bool hasLoop = list.hasLoop();
-
-        cout << "Has loop: " << boolToStr(hasLoop) << endl;
-
-        checkTestResult(!hasLoop);
+        
+        Node* result = list.findKthFromEnd(1);
+        
+        cout << "Kth from end: " << ptrToNum(result) << endl;
+        
+        checkTestResult(result == nullptr);
     }
 
-    // Test: SingleElementNoLoop
+    // Test: KGreaterThanListLength
     {
-        cout << "\n------ LinkedList Test: SingleElementNoLoop ------\n";
-
+        cout << "\n------ LinkedList Test: KGreaterThanListLength ------\n";
+        
         LinkedList list(1);
-
+        list.append(2);
+        
         list.printList();
-
-        bool hasLoop = list.hasLoop();
-
-        cout << "Has loop: " << boolToStr(hasLoop) << endl;
-
-        checkTestResult(!hasLoop);
+        
+        Node* result = list.findKthFromEnd(3);
+        
+        cout << "Kth from end: " << ptrToNum(result) << endl;
+        
+        checkTestResult(result == nullptr);
     }
 
-    // Test: MultipleElementsNoLoop
+    // Test: KEqualsListLength
     {
-        cout << "\n------ LinkedList Test: MultipleElementsNoLoop ------\n";
+        cout << "\n------ LinkedList Test: KEqualsListLength ------\n";
+        
+        LinkedList list(1);
+        list.append(2);
+        list.append(3);
+        
+        list.printList();
+        
+        Node* result = list.findKthFromEnd(3);
+        
+        cout << "Kth from end: " << ptrToNum(result) << endl;
+        
+        checkTestResult(result && result->value == 1);
+    }
 
+    // Test: KLessThanListLength
+    {
+        cout << "\n------ LinkedList Test: KSecondFromEnd ------\n";
+        
         LinkedList list(1);
         list.append(2);
         list.append(3);
         list.append(4);
-
+        list.append(5);
+        
         list.printList();
-
-        bool hasLoop = list.hasLoop();
-
-        cout << "Has loop: " << boolToStr(hasLoop) << endl;
-
-        checkTestResult(!hasLoop);
+        
+        Node* result = list.findKthFromEnd(2);
+        
+        cout << "Kth from end: " << ptrToNum(result) << endl;
+        
+        checkTestResult(result && result->value == 4);
     }
-
-    // Test: SingleElementWithLoop
-    {
-        cout << "\n------ LinkedList Test: SingleElementWithLoop ------\n";
-
-        LinkedList list(1);
-        Node* tail = list.getTail();
-        tail->next = list.getHead();
-
-        // Can't print the list because it has a loop!
-
-        bool hasLoop = list.hasLoop();
-
-        cout << "Has loop: " << boolToStr(hasLoop) << endl;
-
-        tail->next = nullptr;  // Break the loop
-
-        checkTestResult(hasLoop);
-    }
-
-    // Test: MultipleElementsWithLoop
-    {
-        cout << "\n------ LinkedList Test: MultipleElementsWithLoop ------\n";
-
-        LinkedList list(1);
-        list.append(2);
-        list.append(3);
-        list.append(4);
-        Node* tail = list.getTail();
-        tail->next = list.getHead();
-
-        // Can't print the list because it has a loop!
-
-        bool hasLoop = list.hasLoop();
-
-        cout << "Has loop: " << boolToStr(hasLoop) << endl;
-
-        tail->next = nullptr;  // Break the loop
-
-        checkTestResult(hasLoop);
-    }
-
-    cout << "end" ;
-
+    
 }
+
+
