@@ -1,41 +1,52 @@
-#include <QCoreApplication>
 #include <iostream>
+#include <thread>
 
-int main(int argc, char *argv[])
+using namespace std;
+
+//callable object - thread entry point
+void hello()
 {
-    QCoreApplication a(argc, argv);
+    cout << "hello world\n";
+}
 
-    do
-    {
-        try
-        {
-            int max = 44;
-            int div = 0;
-            qInfo() << "enter a number to divide by (or Zero for an issue)";
-            std::cin >> div;
+void hello2(string x)
+{
+    cout << x << endl;
+}
 
-            if(div == 0)
-            {
-                throw QString("cannot devide to zero");
-            }
+//pass by move
+void hello3(string&& x)
+{
+    cout << x << endl;
+}
 
-            int answer = max / div; //posible exception
-            qInfo() << answer;
-        }
-        catch (QString e)
-        {
-            qWarning() <<"catch:" <<e;
-        }
-        catch(int e)
-        {
+void hello4(string& x)
+{
+    cout << x << endl;
+}
 
-        }
-        catch(...)
-        {
-            //catch all - very bad case
-        }
+string str = "abc";
+int value3 = 5;
+int main()
+{
+    //creat new std::thread object
+    //pass the task function to constructor
+    std::thread thr(hello);
+    
+    //wait for thread complete
+    thr.join();
 
-    }while (true);
+    //pass by value
+    std::thread thr2(hello2, str);
+    thr2.join();
 
-    return a.exec();
+    //pass by move - after excute, std is empty
+    std::thread thr3(hello3, std::move(str));
+    thr3.join();
+    cout << str << endl;
+    str = "abc";
+    //pass by move - after excute, std is empty
+    std::thread thr4(hello4, std::ref(str));
+    thr4.join();
+    cout << str << endl;
 }
