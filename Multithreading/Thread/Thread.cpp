@@ -14,7 +14,11 @@ void hello2()
     cout << "hello thread "<< endl;
 }
 
-
+//func with 1 argument is std::thread object
+void func(std::thread thr)
+{
+    thr.join();
+}
 int main()
 {
     //Thread ID
@@ -30,10 +34,25 @@ int main()
     }
 
     //Pause thread
+    cout << "\n\n//pause thread\n";
     {
         cout << "start thread" << endl;
-        std::thread thr2(hello2);
+        std::thread thr2(hello2);           //pause thread 2s
         thr2.join();
+    }
+
+    //pass std::thread object as function argument
+    cout << "\n\n//pass std::thread object as function argument\n";
+    {
+        //creat a thread name thr
+        std::thread thr(hello);
+
+        //pass object thr using std::move
+        func(std::move(thr));
+
+        //pass a temporary object
+        func(std::thread(hello));
+
     }
 
 }
