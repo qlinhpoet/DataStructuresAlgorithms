@@ -11,7 +11,7 @@ void reader()
     //lock mutex but still call unlock
     std::unique_lock<std::mutex> uniq_lck(mut);
 
-    cond_var.wait(uniq_lck, []{return true;});
+    cond_var.wait(uniq_lck);
 
     std::cout <<"sData: " << sData <<std::endl;
 }
@@ -27,7 +27,7 @@ int main()
 {
     std::cout <<"initial sData: " << sData <<std::endl;
     std::thread thr1(reader);
-    //problem happen if writer call notify_one before reader call wait()
+    //problem happen if writer call notify_one before reader call wait
     std::thread thr2(writer);
     thr1.join();
     thr2.join();
