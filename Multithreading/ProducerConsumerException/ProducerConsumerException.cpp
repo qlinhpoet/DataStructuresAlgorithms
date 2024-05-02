@@ -16,6 +16,10 @@ void producer(std::promise<int>& px)
         //3.producer stored exception in shared state
         px.set_exception(std::current_exception());
     }
+    
+    /* set exception with std::make_exception_ptr
+    px.set_exception(std::make_exception_ptr(std::out_of_range("nop")));
+    */
 }
 
 void consumer(std::future<int>& fx)
@@ -33,7 +37,7 @@ void consumer(std::future<int>& fx)
         std::cout<<"consumer catched\n";
         std::cerr << e.what() << '\n';
     }
-    
+   
 }
 
 int main()

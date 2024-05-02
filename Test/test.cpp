@@ -1,52 +1,30 @@
 #include <iostream>
 #include <thread>
+#include <mutex>
+#include <atomic>
 
-using namespace std;
+//std::atomic<int> x = 0;
+std::atomic<int> x = {0};
+//int x;
+std::mutex mut;
 
-//callable object - thread entry point
-void hello()
+void increment()
 {
-    cout << "hello world\n";
+    for(int i=0; i<100000; i++)
+    {
+        std::lock_guard<std::mutex> lck_guard(mut);
+        x++;
+    }
+
 }
 
-void hello2(string x)
-{
-    cout << x << endl;
-}
-
-//pass by move
-void hello3(string&& x)
-{
-    cout << x << endl;
-}
-
-void hello4(string& x)
-{
-    cout << x << endl;
-}
-
-string str = "abc";
-int value3 = 5;
 int main()
 {
-    //creat new std::thread object
-    //pass the task function to constructor
-    std::thread thr(hello);
+    std::thread thr1(increment);
+    std::thread thr2(increment);
     
-    //wait for thread complete
-    thr.join();
-
-    //pass by value
-    std::thread thr2(hello2, str);
+    thr1.join();
     thr2.join();
-
-    //pass by move - after excute, std is empty
-    std::thread thr3(hello3, std::move(str));
-    thr3.join();
-    cout << str << endl;
-    str = "abc";
-    //pass by move - after excute, std is empty
-    std::thread thr4(hello4, std::ref(str));
-    thr4.join();
-    cout << str << endl;
+    std::cout <<x<<std::endl;
+    return 0;
 }

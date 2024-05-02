@@ -1,25 +1,25 @@
-cout << "\n----- Test: Unbalanced Closing Parentheses -----\n";
-    // {
-    //     string inputs[] = {")", "())", "(()))"};
-    //     for (const string &input : inputs) {
-    //         cout << "Input: \"" << input << "\"\n";
-    //         cout << "Output: " << (isBalancedParentheses(input) ? "Balanced" : "Unbalanced") << " - EXPECTED: Unbalanced\n";
-    //         cout << (!isBalancedParentheses(input) ? "PASS\n" : "FAIL\n");
-    //     }
-    // }
+#include <iostream>
+#include <thread>
+#include <mutex>
+int x;
+std::mutex mut;
+void increment()
+{
+    for(int i=0; i<100000; i++)
+    {
+        std::lock_guard<std::mutex> lck_guard(mut);
+        x++;
+    }
 
-    // cout << "\n----- Test: Mixed Parentheses -----\n";
-    // {
-    //     string balancedInput = "()()";
-    //     string unbalancedInputs[] = {"()(", "())()"};
+}
 
-    //     cout << "Input: \"" << balancedInput << "\"\n";
-    //     cout << "Output: " << (isBalancedParentheses(balancedInput) ? "Balanced" : "Unbalanced") << " - EXPECTED: Balanced\n";
-    //     cout << (isBalancedParentheses(balancedInput) ? "PASS\n" : "FAIL\n");
-
-    //     for (const string &input : unbalancedInputs) {
-    //         cout << "Input: \"" << input << "\"\n";
-    //         cout << "Output: " << (isBalancedParentheses(input) ? "Balanced" : "Unbalanced") << " - EXPECTED: Unbalanced\n";
-    //         cout << (!isBalancedParentheses(input) ? "PASS\n" : "FAIL\n");
-    //     }
-    // }
+int main()
+{
+    std::thread thr1(increment);
+    std::thread thr2(increment);
+    
+    thr1.join();
+    thr2.join();
+    std::cout <<x<<std::endl;
+    return 0;
+}
