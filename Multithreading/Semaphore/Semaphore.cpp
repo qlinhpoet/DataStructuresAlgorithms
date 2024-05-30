@@ -1,60 +1,69 @@
-#include <iostream>
+#include <mutex>
 #include <condition_variable>
+#include <iostream>
 #include <thread>
 #include <mutex>
-
-class semaphore
-{
+#include <vector>
+int x ;
+class Semaphore {
 private:
-    std::mutex mut;
+    std::mutex mtx;
     std::condition_variable cv;
-    int counter = 0;
+    int counter{0};
 public:
+    void release() {
+        std::lock_guard<std::mutex> lock(mtx);
+        std::cout << "Adding one item" << std::endl;
 
-    void release()
-    {
-        std::lock_guard<std::mutex> lck(mut);
         ++counter;
-        std::cout <<"counter = " << counter <<std::endl;
+		count();	
+
         cv.notify_all();
     }
 
-    void acquire()
-    {
-        //unique lock mut, unlock when call constructor
-        std::cout <<"acquiring" <<std::endl;
-        std::unique_lock<std::mutex> lck(mut);
-        
-        while(counter == 0)
-        {
-            cv.wait(lck);
+    void acquire() {
+        std::unique_lock<std::mutex> lock(mtx);
+        std::cout << "Removing one item" << std::endl;
+
+        while (counter == 0) {
+            //unlock mtx and wait until receive notification.
+            //mtx is unlocked so other thread can call release() to lock the mtx.
+            cv.wait(lock);
         }
 
-        counter--;
-        //constructor unlock mut but with counter == 0, other acquire() will be blocked
-
+        --counter;
+        count();
     }
 
+    void count() const {
+        std::cout << "Value of counter: ";
+        std::cout << counter << std::endl;
+    }
 };
 
-int x = 0;
-semaphore sem;
-void increment()
-{
-    sem.acquire();
-    //sem.acquire();
-    x++;
-    sem.release();
-}
+int main() {
+    Semaphore sem;
 
-int main()
-{
-    std::thread thr1(increment);
-    std::thread thr2(increment);
+    auto insert = [&sem]() {
+        sem.release();
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));
+    };
 
-    thr1.join();
-    thr2.join();
+    auto relinquish = [&sem] {
+        sem.acquire();
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));
+    };
 
-    std::cout <<x<<std::endl;
-    return 0;
+    std::vector<std::thread> tasks;
+
+    for (int i = 0; i < 2; ++i)
+        tasks.push_back(std::thread(insert));
+    for (int i = 0; i < 4; ++i)
+        tasks.push_back(std::thread(relinquish));
+    for (int i = 0; i < 3; ++i)
+        tasks.push_back(std::thread(insert));
+    for (auto& task : tasks) {
+        task.join();
+    }
+
 }
