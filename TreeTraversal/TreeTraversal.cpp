@@ -1,5 +1,7 @@
 #include <iostream>
 #include <queue>
+#include <vector>
+#include <functional>
 using namespace std;
 
 class Node
@@ -121,7 +123,7 @@ public:
 
     void DFSPreOrder(Node* currentNode)
     {
-        if(currentNode == nullptr) return;
+        //if(currentNode == nullptr) return;
         // print current node's value
         cout << currentNode->value << " ";
         // traverse left subtree recursively
@@ -209,19 +211,33 @@ void BinarySearchTree::BFS()      //breadth first search
     }
 }
 
+bool isSameTree(Node* p, Node* q) {
+        if(p == nullptr && q == nullptr) return true;
+        if(p == nullptr || q == nullptr) return false;
+        bool ret = true;
+        ret &= p->value == q->value;
+        ret &= isSameTree(p->left, q->left);
+        ret &= isSameTree(p->right, q->right);
+        return ret;
+}
+bool isSymmetric(Node* root) {
+        if(root == nullptr) return true;
+        std::function<bool(Node*, Node*)> helpfc = [&](Node* p, Node* q)
+        {
+            if(p==nullptr && q==nullptr) return true;
+            if(p==nullptr || q==nullptr) return false;
+            return (p->value == q->value) && helpfc(p->left, q->right) && helpfc(p->right, q->left);
+        };
+
+        return helpfc(root->left, root->right);
+}
+
 int main()
 {
-    BinarySearchTree mybst(6);
-    mybst.insert(2);
-    mybst.insert(3);
-    mybst.insert(8);
-    mybst.insert(4);
-    mybst.BFS();
-    cout << endl;
-    mybst.DFSPreOrder();
-    cout << endl;
-    mybst.DFSPostOrder();
-    cout << endl;
-    mybst.DFSInOrder();
+    Node* p = new Node(1);
+    p->left = new Node(2);
+    p->right = new Node(2);
+
+    cout << isSymmetric(p);
     return 0;
 }

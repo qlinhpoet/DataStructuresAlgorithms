@@ -1,47 +1,37 @@
-#include <chrono>
-#include <condition_variable>
 #include <iostream>
-#include <thread>
- 
-std::condition_variable cv;
-std::mutex cv_m; // This mutex is used for three purposes:
-                 // 1) to synchronize accesses to i
-                 // 2) to synchronize accesses to std::cerr
-                 // 3) for the condition variable cv
-int i = 0;
- 
-void waits()
-{
-    std::unique_lock<std::mutex> lk(cv_m);
-    std::cerr << "Waiting... \n";
-    cv.wait(lk, []{ return i == 1; });
-    std::cerr << "...finished waiting. i == 1\n";
-}
- 
-void signals()
-{
-    std::this_thread::sleep_for(std::chrono::seconds(1));
-    {
-        std::lock_guard<std::mutex> lk(cv_m);
-        std::cerr << "Notifying...\n";
+#include <vector>
+using namespace std;
+int removeDuplicates(vector<int>& nums) {
+        int length = nums.size();
+        int countDup = 0;
+        int ret = length;
+        for(int i=0; i<length; i++)
+        {
+                if(i+1 < ret && nums[i] == nums[i+1])
+                {
+                    countDup++;
+                    if(countDup >= 2)
+                    {
+                        ret--;
+                        for(int k=i+1; k<length; k++)
+                        {
+                            nums[k-1] = nums[k];
+                        }
+                        i--;
+                    }
+
+                }
+                else countDup = 0;
+        }
+        return ret;
     }
-    cv.notify_all();
- 
-    std::this_thread::sleep_for(std::chrono::seconds(1));
- 
-    {
-        std::lock_guard<std::mutex> lk(cv_m);
-        i = 1;
-        std::cerr << "Notifying again...\n";
-    }
-    //cv.notify_all();
-}
- 
+
+vector<int> nums = {0,0,1,1,1,1,2,3,3};
 int main()
 {
-    std::thread t1(waits), t2(waits), t3(waits), t4(signals);
-    t1.join(); 
-    t2.join(); 
-    t3.join();
-    t4.join();
+    cout <<"hello";
+    cout << removeDuplicates(nums);
+    cout <<"hello";
+    return 0;
 }
+

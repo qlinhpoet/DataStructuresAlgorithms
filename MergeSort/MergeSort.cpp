@@ -113,10 +113,10 @@ void merge(int array[], int leftIndex, int midIndex, int rightIndex)
 void mergeSort(int array[], int leftIndex, int rightIndex)
 {
     if(leftIndex >= rightIndex) return;
-    int midIndex = leftIndex + (rightIndex-leftIndex)/2;
-    mergeSort(array, leftIndex, midIndex);
-    mergeSort(array, midIndex+1, rightIndex);
-    merge(array, leftIndex, midIndex, rightIndex);
+    int mid = (rightIndex + leftIndex)/2;
+    mergeSort(array, leftIndex, mid);
+    mergeSort(array, mid+1, rightIndex);
+    merge(array, leftIndex, mid, rightIndex);
 }
 
 int arr[] = {1,3,7,8,2,4,5,6,9};
